@@ -16,7 +16,7 @@ const create = async (user_id, categoryName, icon) => {
 }
 
 const update = async (id, user_id, categoryName, icon) => {
-    const [result] = await promisePool.query("UPDATE categories SET categoryName = ?, icon = ? WHERE id = ? AND user_id = ?", [categoryName, icon || null, id, user_id]);
+    const [result] = await promisePool.query("UPDATE categories SET name = ?, icon = ? WHERE id = ? AND user_id = ?", [categoryName, icon || null, id, user_id]);
     return result;
 }
 
