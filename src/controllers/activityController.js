@@ -70,10 +70,23 @@ const updateActivity = async (req, res) => {
     }
 };
 
+const removeActivity = async (req, res) => {
+    const userId = req.session.user.id;
+    const activityId = req.params.id;
+    try {
+        await models.remove(activityId, userId);
+        res.redirect("/activities");
+    } catch (error) {
+        console.error("Error deleting activity:", error);
+        res.status(500).send("Internal Server Error");
+    }
+};
+
 module.exports = {
     showAllActivities,
     showCreateForm,
     addActivity,
     updateActivity,
-    editPage
+    editPage,
+    removeActivity  
 };

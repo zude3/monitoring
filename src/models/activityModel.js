@@ -58,10 +58,24 @@ const update = async (id, userId, category_id, name, duration, activity_date, ac
     }
 }
 
+const remove = async (id, userId) => {
+    try {
+        const [result] = await promisePool.query(
+            'DELETE FROM activities WHERE id = ? AND user_id = ?',
+            [id, userId]
+        );
+        return result;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
 module.exports = {
     getAllByUserId,
     findById,
     addActivity,
     update,
-    getCategoriesByUserId
+    getCategoriesByUserId,
+    remove
 }; 
