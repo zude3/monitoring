@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activities</title>
+</head>
+<body>
+    <h1>Activities</h1>
+
+    <% if (activities.length > 0) { %>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Category</th>
+                    <th>Name</th>
+                    <th>Duration</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>notes</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% activities.forEach(activity => { %>
+                    <tr>
+                        <td><%= activity.id %></td>
+                        <td><%= activity.categoryName %></td>
+                        <td><%= activity.name %></td>
+                        <td><%= activity.duration %></td>
+                        <td><%= new Date(activity.activity_date).toLocaleDateString("id-ID", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric"
+                        }) %></td>
+                        <td><%= activity.activity_time %></td>
+                        <td><%= activity.notes %></td>
+                        <td>
+                            <a href="/activities/<%= activity.id %>/edit">Edit</a>
+                            <form action="/activities/<%= activity.id %>/delete" method="POST" style="display: inline;">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% }else { %>
+        <p>No activities found.</p>
+    <% } %>
+    <a href="/activities/create">Add Activity</a>
+    <a href="/dashboard">Back</a>
+</body>
+</html>

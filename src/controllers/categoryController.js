@@ -3,8 +3,6 @@ const models = require("../models/categoryModel");
 
 const index = async (req, res) => {
     try{
-        console.log(req.session);
-        console.log(req.session.user);
         const categories = await models.getAllByUserId(req.session.user.id);
         
         res.render("categories/index", { categories, user: req.session.user });

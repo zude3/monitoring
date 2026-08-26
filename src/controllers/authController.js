@@ -49,8 +49,6 @@ const login = async (req, res) => {
             }
             res.redirect("/dashboard");
         });
-        console.log(req.session);
-        console.log(req.session.user);
     } catch (error) {
         console.error(error);
         res.status(500).send("Error logging in");
