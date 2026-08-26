@@ -7,6 +7,7 @@ const authRoutes = require("./routes/authRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const activityRoutes = require("./routes/activityRoutes");
+const targetRoutes = require("./routes/targetRoutes");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -27,6 +28,7 @@ app.use("/auth", authRoutes);
 app.use("/dashboard", dashboardRoutes);
 app.use("/categories", categoryRoutes);
 app.use("/activities", activityRoutes);
+app.use("/targets", targetRoutes);
 
 app.get("/", (req, res) => {
     res.redirect("/auth/login");
