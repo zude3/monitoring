@@ -4,6 +4,8 @@ const session = require("express-session");
 const path = require("path");
 
 const authRoutes = require("./routes/authRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -21,6 +23,8 @@ app.use(
 );
 
 app.use("/auth", authRoutes);
+app.use("/dashboard", dashboardRoutes);
+app.use("/categories", categoryRoutes);
 
 app.get("/", (req, res) => {
     res.redirect("/auth/login");

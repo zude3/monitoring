@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category</title>
+</head>
+<body>
+    <h1>Category</h1>
+    <% if (categories.length > 0) { %>
+        <ul>
+            <% categories.forEach(category => { %>
+                <li>
+                    <strong><%= category.name %></strong>
+                    <a href="/categories/<%= category.id %>/edit">Edit</a>
+                    <form action="/categories/<%= category.id %>/delete" method="POST" style="display: inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>No categories found.</p>
+    <% } %>
+    <a href="/categories/create">Add Category</a>
+    <a href="/dashboard">Back</a>
+</body>
+</html>

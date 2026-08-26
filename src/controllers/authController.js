@@ -40,7 +40,7 @@ const login = async (req, res) => {
             return res.status(400).send("Invalid email or password");
         }
 
-        req.session.userId = { id: user.id, name: user.username, email: user.email };
+        req.session.user = { id: user.id, name: user.username, email: user.email };
 
         req.session.save((err) => {
             if (err) {
@@ -49,7 +49,8 @@ const login = async (req, res) => {
             }
             res.redirect("/dashboard");
         });
-
+        console.log(req.session);
+        console.log(req.session.user);
     } catch (error) {
         console.error(error);
         res.status(500).send("Error logging in");
@@ -62,7 +63,7 @@ const logout = (req, res) => {
             console.error(err);
             return res.status(500).send("Error logging out");
         }
-        res.redirect("/login");
+        res.redirect("/auth/login");
     });
 };
 
