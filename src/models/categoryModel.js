@@ -2,7 +2,7 @@ const { promisePool } = require("../config/db");
 
 const getAllByUserId = async (user_id) => {
     const [rows] = await promisePool.query("SELECT * FROM categories WHERE user_id = ?", [user_id]);
-    return rows[0];
+    return rows;
 };
 
 const findById = async (id, user_id) => {
@@ -11,7 +11,7 @@ const findById = async (id, user_id) => {
 };
 
 const create = async (user_id, categoryName, icon) => {
-    const [result] = await promisePool.query("INSERT INTO categories (user_id, categoryName, icon) VALUES (?, ?, ?)", [user_id, categoryName, icon || null]);
+    const [result] = await promisePool.query("INSERT INTO categories (user_id, name, icon) VALUES (?, ?, ?)", [user_id, categoryName, icon || null]);
     return result;
 }
 
