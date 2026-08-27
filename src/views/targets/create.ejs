@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Target</title>
+</head>
+<body>
+    <h1>Create Target</h1>
+    <form action="/targets/create" method="POST">
+        <div>
+            <label for="category_id">Category:</label>
+            <select name="category_id" id="category_id" required>
+                <option value="">Select a category</option>
+                <% categories.forEach(category => { %>
+                    <option value="<%= category.id %>"><%= category.name %></option>
+                <% }); %>
+            </select>
+            <a href="/categories/create">Add New Category</a>
+        </div>
+        <div>
+            <label for="period">Period:</label>
+            <select name="period" id="period" required>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+            </select>
+        </div>
+        <div>
+            <label for="target_value">Target Value:</label>
+            <input type="number" name="target_value" id="target_value" placeholder="" required>
+        </div>
+        <button type="submit">Create Target</button>
+        
+    </form>
+</body>
+</html>

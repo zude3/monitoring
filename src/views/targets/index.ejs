@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Targets</title>
+</head>
+<body>
+    <h1>Targets</h1>
+    <% if(targets.length > 0) { %>
+        <ul>
+            <% targets.forEach(target => { %>
+                <li>
+                    <strong><%= target.category_name %></strong> - <%= target.target_value %>
+                    <% if(target.period === "daily") { %>
+                        <p>Minutes /day - Daily Target</p>
+                    <% }else{ %>
+                        <p>Times /week - Weekly Target</p>
+                    <% } %>
+                    <a href="/targets/edit/<%= target.id %>">Edit</a>
+                    <br>
+                    <a href="/targets/delete/<%= target.id %>">Delete</a>
+                    <br>
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>No targets found, add some targets.</p>
+    <% } %>
+    <a href="/targets/create">Add Target</a>
+</body>
+</html>
