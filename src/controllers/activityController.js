@@ -20,8 +20,9 @@ const showAllActivities = async (req, res) => {
 const showCreateForm = async (req, res) => {
     const userId = req.session.user.id;
     const categories = await models.getCategoriesByUserId(userId);
+    const targets = await models.getTargetsByUserId(userId);
 
-    res.render("activities/create", { user: req.session.user, categories });
+    res.render("activities/create", { user: req.session.user, categories, targets });
 }
 
 const addActivity = async (req, res) => {

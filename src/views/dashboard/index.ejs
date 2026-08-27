@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        .monitoring-card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+        }
+
+        .red {
+            background: red;
+        }
+
+        .yellow {
+            background: orange;
+        }
+
+        .green {
+            background: green;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Dashboard</h1>
+    <h2>Monitoring Hari Ini</h2>
+
+    <% if (monitoring.length === 0) { %>
+
+        <p>
+            Belum ada target harian.
+        </p>
+
+    <% } %>
+
+    <% monitoring.forEach(item => { %>
+
+        <div class="monitoring-card">
+
+            <h3>
+
+                <%= item.icon || "📁" %>
+
+                <%= item.categoryName %>
+
+                <% if (item.status === "red") { %>
+                    🔴
+                <% } %>
+
+                <% if (item.status === "yellow") { %>
+                    🟡
+                <% } %>
+
+                <% if (item.status === "green") { %>
+                    🟢
+                <% } %>
+
+            </h3>
+
+            <p>
+
+                <strong>
+                    <%= item.actualValue %>
+                </strong>
+
+                /
+
+                <strong>
+                    <%= item.targetValue %>
+                </strong>
+
+                menit
+
+            </p>
+
+            <div class="progress-container">
+
+                <div
+                    class="progress-bar <%= item.status %>"
+                    style="width: <%= Math.min(item.progressPercentage, 100) %>%"
+                ></div>
+
+            </div>
+
+            <p>
+
+                <%= item.progressPercentage.toFixed(1) %>%
+
+            </p>
+
+        </div>
+
+    <% }) %>
+
+    <a href="/activities/create">Add Activity</a><br>
+    <a href="/targets">Targets</a><br>
+    <a href="/targets/create">Add Target</a><br>
+    <a href="/categories">Manage Categories</a><br>
+    <a href="/activities">Activities</a><br>
+    <a href="/auth/logout">Logout</a><br>
+</body>
+</html>

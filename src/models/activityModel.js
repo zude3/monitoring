@@ -45,6 +45,14 @@ const getCategoriesByUserId = async (userId) => {
     return rows;
 }
 
+const getTargetsByUserId = async (userId) => {
+    const [rows] = await promisePool.query(
+        'SELECT * FROM targets WHERE user_id = ?',
+        [userId]
+    );
+    return rows;
+}
+
 const update = async (id, userId, category_id, name, duration, activity_date, activity_time, notes) => {
     try {
         const [result] = await promisePool.query(
@@ -77,5 +85,6 @@ module.exports = {
     addActivity,
     update,
     getCategoriesByUserId,
+    getTargetsByUserId,
     remove
 }; 
