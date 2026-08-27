@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Target</title>
+</head>
+<body>
+    <h1>Edit Target</h1>
+    <form action="/targets/edit/<%= target.id %>" method="POST">
+        <div>
+            <p>Category: <strong><%= target.category_name %></strong></p>
+            <input type="hidden" name="category_id" value="<%= target.category_id %>">
+        </div>
+        <div>
+            <label for="period">Period:</label>
+            <select name="period" id="period" required>
+                <option value="daily" <%= target.period === 'daily' ? 'selected' : '' %>>Daily</option>
+                <option value="weekly" <%= target.period === 'weekly' ? 'selected' : '' %>>Weekly</option>
+            </select>
+        </div>
+        <div>
+            <label for="target_value">Target Value:</label>
+            <input type="number" name="target_value" id="target_value" value="<%= target.target_value %>" required>
+        </div>
+        <button type="submit">Update Target</button>
+    </form>
+</body>
+</html>

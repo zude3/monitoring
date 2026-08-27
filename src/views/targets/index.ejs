@@ -11,7 +11,16 @@
         <ul>
             <% targets.forEach(target => { %>
                 <li>
-                    <strong><%= target.name %></strong> - <%= target.description %>
+                    <strong><%= target.category_name %></strong> - <%= target.target_value %>
+                    <% if(target.period === "daily") { %>
+                        <p>Minutes /day - Daily Target</p>
+                    <% }else{ %>
+                        <p>Times /week - Weekly Target</p>
+                    <% } %>
+                    <a href="/targets/edit/<%= target.id %>">Edit</a>
+                    <br>
+                    <a href="/targets/delete/<%= target.id %>">Delete</a>
+                    <br>
                 </li>
             <% }); %>
         </ul>

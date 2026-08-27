@@ -12,33 +12,25 @@
             <label for="category_id">Category:</label>
             <select name="category_id" id="category_id" required>
                 <option value="">Select a category</option>
-                <!-- Options will be populated by JavaScript or server-side rendering -->
                 <% categories.forEach(category => { %>
                     <option value="<%= category.id %>"><%= category.name %></option>
-                <% }); %>   
+                <% }); %>
+            </select>
+            <a href="/categories/create">Add New Category</a>
+        </div>
+        <div>
+            <label for="period">Period:</label>
+            <select name="period" id="period" required>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
             </select>
         </div>
         <div>
             <label for="target_value">Target Value:</label>
-            <input type="number" name="target_value" id="target_value" required>
-        </div>
-        <div>
-            <label for="period">Period:</label>
-            <input type="text" name="period" id="period" required>
-        </div>
-        <div>
-            <label for="start_date">Start Date:</label>
-            <input type="date" name="start_date" id="start_date" required>
-        </div>
-        <div>
-            <label for="end_date">End Date:</label>
-            <input type="date" name="end_date" id="end_date" required>
-        </div>
-        <div>
-            <label for="target_type">Target Type:</label>
-            <input type="text" name="target_type" id="target_type" required>
+            <input type="number" name="target_value" id="target_value" placeholder="" required>
         </div>
         <button type="submit">Create Target</button>
-    </form> -->
+        
+    </form>
 </body>
 </html>

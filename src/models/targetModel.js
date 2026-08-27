@@ -4,7 +4,7 @@ const getAllByUserId = async (user_id) => {
     const [rows] = await promisePool.query(
         `SELECT
             targets.*,
-            categories.name,
+            categories.name as category_name,
             categories.icon
         FROM targets
         JOIN categories
@@ -18,15 +18,24 @@ const getAllByUserId = async (user_id) => {
 
 const findTargetById = async (id) => {
     const [rows] = await promisePool.query(
-        "SELECT * FROM targets WHERE id = ?", [id]
+        `SELECT
+            targets.*,
+            categories.name as category_name,
+            categories.icon
+        FROM targets
+        JOIN categories
+            ON targets.category_id = categories.id
+        WHERE targets.id = ?
+        `,
+        [id]
     );
     return rows[0];
 }
 
-const createTarget = async (user_id, category_id, target_value, period, start_date, end_date, target_type) => {
+const createTarget = async (user_id, category_id, target_value, period) => {
     const [result] = await promisePool.query(
-        "INSERT INTO targets (user_id, category_id, target_value, period, start_date, end_date, target_type) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [user_id, category_id, target_value, period, start_date, end_date, target_type]
+        "INSERT INTO targets (user_id, category_id, target_value, period) VALUES (?, ?, ?, ?)",
+        [user_id, category_id, target_value, period]
     );
     return result;
 };
@@ -38,9 +47,26 @@ const getCategoryById = async (user_id) => {
     return rows;
 }
 
+const updateTarget = async (id, user_id, category_id, target_value, period) => {
+    const [result] = await promisePool.query(
+        "UPDATE targets SET user_id = ?, category_id = ?, target_value = ?, period = ? WHERE id = ?",
+        [user_id, category_id, target_value, period, id]
+    );
+    return result;
+};
+
+const deleteTarget = async (id) => {
+    const [result] = await promisePool.query(
+        "DELETE FROM targets WHERE id = ?", [id]
+    );
+    return result;
+};
+
 module.exports = {
     getAllByUserId,
     findTargetById,
     createTarget,
-    getCategoryById
+    updateTarget,
+    getCategoryById,
+    deleteTarget
 };
