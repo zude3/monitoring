@@ -36,18 +36,169 @@
             background: green;
         }
 
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+        }
+
+        .calendar-header {
+            font-weight: bold;
+            text-align: center;
+            padding: 3px;
+        }
+
+        .calendar-day {
+            min-height: 10px;
+            max-width: 50px;
+            padding: 3px;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        .calendar-day.empty {
+            background: transparent;
+        }
+
+        .calendar-day.gray {
+            background: #e5e7eb;
+        }
+
+        .calendar-day.yellow {
+            background: #ffd93f;
+        }
+
+        .calendar-day.green {
+            background: #3fff82;
+        }
+
+        .day-number {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .activity-info {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
     </style>
 </head>
 <body>
     <h1>Welcome to the Dashboard</h1>
-    <h2>Monitoring Today</h2>
+
+    <h2>Daily Monitoring Calendar</h2>
+
+<form method="GET" action="/dashboard">
+
+    <label>Kategori</label>
+
+    <select name="category_id" onchange="this.form.submit()">
+        <% dailyCategories.forEach(category => { %>
+            <option
+                value="<%= category.id %>"
+                <%= selectedCategory &&
+                    category.id === selectedCategory.id
+                    ? "selected"
+                    : "" %>
+            >
+                <%= category.icon || "📁" %>
+                <%= category.name %>
+            </option>
+
+        <% }) %>
+
+    </select>
+    
+    <label>Bulan</label>
+
+    <select name="month" onchange="this.form.submit()">
+        <% for (let i = 1; i <= 12; i++) { %>
+            <option
+                value="<%= i %>"
+
+                <%= i === month
+                    ? "selected"
+                    : "" %>
+            >
+                <%= new Date(
+                    2026,
+                    i - 1
+                ).toLocaleDateString(
+                    "id-ID",
+                    {
+                        month: "long"
+                    }
+                ) %>
+            </option>
+
+        <% } %>
+    </select>
+    <input
+        type="number"
+        name="year"
+        value="<%= year %>"
+        onchange="this.form.submit()"
+    >
+
+</form>
+
+<% if (!selectedCategory) { %>
+        <p>Belum ada kategori dengan target harian.</p>
+    <% } else { %>
+
+        <h3><%= selectedCategory.name %></h3>
+        <p>Daily Target: <strong><%= selectedCategory.target_value %> minutes</strong></p>
+
+    <% } %>
+
+<div class="calendar">
+        <% [
+            "Mon",
+            "Thu",
+            "Wed",
+            "Tue",
+            "Fri",
+            "Sat",
+            "Sun"
+        ].forEach(dayName => { %>
+            <div class="calendar-header">
+                <%= dayName %>
+            </div>
+        <% }) %>
+
+        <% calendar.forEach(day => { %>
+            <% if (!day) { %>
+                <div
+                    class="calendar-day empty"
+                ></div>
+            <% } else { %>
+                <div class="calendar-day <%= day.status %>">
+                    <div class="day-number">
+                        <%= day.day %>
+                    </div>
+                </div>
+
+            <% } %>
+
+        <% }) %>
+
+    </div>
+
+<br>
+
+    <h2>Today Monitoring</h2>
 
     <% if (dailyMonitoring.length === 0) { %>
-
         <p>
             Belum ada target harian.
         </p>
-
     <% } %>
 
     <% dailyMonitoring.forEach(item => { %>
@@ -72,41 +223,29 @@
 
             </h3>
 
-            <p>
+            <a href="/activities/create">Add Activity</a><br>
 
+            <p>
                 <strong>
                     <%= item.actualValue %>
                 </strong>
-
                 /
-
                 <strong>
                     <%= item.targetValue %>
                 </strong>
-
                 minutes
-
             </p>
 
             <div class="progress-container">
-
                 <div
                     class="progress-bar <%= item.status %>"
                     style="width: <%= Math.min(item.progressPercentage, 100) %>%"
                 ></div>
-
             </div>
 
-            <p>
-
-                <%= item.progressPercentage.toFixed(1) %>%
-
-            </p>
-
+            <p><%= item.progressPercentage.toFixed(1) %>%</p>
         </div>
-
     <% }) %>
-
     <hr>
 
 <h2>Monitoring This Week</h2>

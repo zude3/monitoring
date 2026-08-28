@@ -1,4 +1,5 @@
 const {promisePool} = require('../config/db');
+const { get } = require('../routes/dashboardRoutes');
 
 const getDailyMonitoring = async (userId, date) => {
     const [rows] = await promisePool.query(
@@ -82,7 +83,31 @@ const getWeeklyMonitoring = async (
     return rows;
 };
 
+const getMonthlyDailyMonitoring = async (user_id, month, category_id, year) => {
+    const [rows] = await promisePool.query(
+        `SELECT
+            activity_date,
+            COALESCE(SUM(duration), 0) AS actual_value
+        FROM activities
+        WHERE user_id = ?
+        AND category_id = ?
+        AND YEAR(activity_date) = ?
+        AND MONTH(activity_date) = ?
+        GROUP BY activity_date
+        ORDER BY activity_date ASC`,
+        [
+            user_id,
+            category_id,
+            year,
+            month
+        ]
+    );
+
+    return rows;
+};
+
 module.exports = {
     getDailyMonitoring,
-    getWeeklyMonitoring
+    getWeeklyMonitoring,
+    getMonthlyDailyMonitoring,
 };

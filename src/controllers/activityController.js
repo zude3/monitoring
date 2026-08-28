@@ -22,7 +22,12 @@ const showCreateForm = async (req, res) => {
     const categories = await models.getCategoriesByUserId(userId);
     const targets = await models.getTargetsByUserId(userId);
 
-    res.render("activities/create", { user: req.session.user, categories, targets });
+    const now = new Date();
+
+    const currentTime =
+            `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+    res.render("activities/create", { user: req.session.user, categories, targets, currentTime });
 }
 
 const addActivity = async (req, res) => {
@@ -84,6 +89,7 @@ const removeActivity = async (req, res) => {
 };
 
 module.exports = {
+    getCategoriesByUserId,
     showAllActivities,
     showCreateForm,
     addActivity,
