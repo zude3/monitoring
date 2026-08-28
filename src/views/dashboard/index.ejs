@@ -40,9 +40,9 @@
 </head>
 <body>
     <h1>Welcome to the Dashboard</h1>
-    <h2>Monitoring Hari Ini</h2>
+    <h2>Monitoring Today</h2>
 
-    <% if (monitoring.length === 0) { %>
+    <% if (dailyMonitoring.length === 0) { %>
 
         <p>
             Belum ada target harian.
@@ -50,15 +50,13 @@
 
     <% } %>
 
-    <% monitoring.forEach(item => { %>
+    <% dailyMonitoring.forEach(item => { %>
 
         <div class="monitoring-card">
 
             <h3>
 
-                <%= item.icon || "📁" %>
-
-                <%= item.categoryName %>
+                <%= item.name %>
 
                 <% if (item.status === "red") { %>
                     🔴
@@ -86,7 +84,7 @@
                     <%= item.targetValue %>
                 </strong>
 
-                menit
+                minutes
 
             </p>
 
@@ -109,11 +107,98 @@
 
     <% }) %>
 
+    <hr>
+
+<h2>Monitoring This Week</h2>
+
+<p>
+    <%= startDate %>
+    -
+    <%= endDate %>
+</p>
+
+<% if (weeklyMonitoring.length === 0) { %>
+
+    <p>
+        Belum ada target mingguan.
+    </p>
+
+<% } %>
+
+
+<% weeklyMonitoring.forEach(item => { %>
+
+    <div class="monitoring-card">
+
+        <h3>
+
+            <%= item.icon || "📁" %>
+
+            <%= item.name %>
+
+            <% if (item.status === "red") { %>
+                🔴
+            <% } %>
+
+            <% if (item.status === "yellow") { %>
+                🟡
+            <% } %>
+
+            <% if (item.status === "green") { %>
+                🟢
+            <% } %>
+
+        </h3>
+
+
+        <p>
+
+            <strong>
+                <%= item.actualValue %>
+            </strong>
+
+            /
+
+            <strong>
+                <%= item.targetValue %>
+            </strong>
+
+            days active
+
+        </p>
+
+
+        <div class="progress-container">
+
+            <div
+                class="progress-bar <%= item.status %>"
+
+                style="
+                    width:
+                    <%= Math.min(
+                        item.progressPercentage,
+                        100
+                    ) %>%
+                "
+            ></div>
+
+        </div>
+
+
+        <p>
+
+            <%= item.progressPercentage.toFixed(1) %>%
+
+        </p>
+
+    </div>
+
+<% }) %>
+
     <a href="/activities/create">Add Activity</a><br>
     <a href="/targets">Targets</a><br>
-    <a href="/targets/create">Add Target</a><br>
     <a href="/categories">Manage Categories</a><br>
-    <a href="/activities">Activities</a><br>
+    <a href="/activities">Manage Activities</a><br>
     <a href="/auth/logout">Logout</a><br>
 </body>
 </html>
