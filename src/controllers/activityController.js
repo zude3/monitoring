@@ -9,19 +9,55 @@ const showAllActivities = async (req, res) => {
     try {
         const userId = req.session.user.id;
 
-        const activities = await models.getAllByUserId(userId);
-        res.render("activities/index", { activities });
+        const { date, categoryId } = req.query;
+
+        // Jika berasal dari kalender
+        if (date && categoryId) {
+
+            const activities =
+                await models.getActivitiesByDateAndCategory(
+                    userId,
+                    date,
+                    categoryId
+                );
+
+            return res.render("activities/detail", {
+                user_id: req.session.user,
+                activities,
+                selected_date: date,
+                selected_category_id: categoryId
+            });
+        }
+
+        // Jika membuka menu Activities biasa
+        const activities =
+            await models.getAllByUserId(userId);
+
+        return res.render("activities/index", {
+            user: req.session.user,
+            activities
+        });
+
     } catch (error) {
-        console.error("Error fetching activities:", error);
-        res.status(500).send("Internal Server Error");
+        console.error(error);
+
+        res.status(500).send(
+            "Error fetching activities"
+        );
     }
 };
 
 const showCreateForm = async (req, res) => {
     const userId = req.session.user.id;
     const categories = await models.getCategoriesByUserId(userId);
+    const targets = await models.getTargetsByUserId(userId);
 
-    res.render("activities/create", { user: req.session.user, categories });
+    const now = new Date();
+
+    const currentTime =
+            `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+    res.render("activities/create", { user: req.session.user, categories, targets, currentTime });
 }
 
 const addActivity = async (req, res) => {
@@ -82,11 +118,44 @@ const removeActivity = async (req, res) => {
     }
 };
 
+const detailActivity = async (req, res) => {
+    try {
+
+        const user_id = req.session.user.id;
+        const date = req.query.date;
+
+        const activities =
+            await models.getActivitiesByDate(
+                user_id,
+                date
+            );
+
+        res.render(
+            "activities/detail",
+            {
+                user: req.session.user,
+                activities,
+                date
+            }
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).send(
+            "Error loading activity detail"
+        );
+    }
+};
+
 module.exports = {
+    getCategoriesByUserId,
     showAllActivities,
     showCreateForm,
     addActivity,
     updateActivity,
     editPage,
-    removeActivity  
+    removeActivity,
+    detailActivity 
 };

@@ -62,11 +62,29 @@ const deleteTarget = async (id) => {
     return result;
 };
 
+const findDailyByCategory = async (user_id, category_id) => {
+    const [rows] = await promisePool.query(
+        `SELECT *
+        FROM targets
+        WHERE user_id = ?
+        AND category_id = ?
+        AND period = 'daily'
+        LIMIT 1`,
+        [
+            user_id,
+            category_id
+        ]
+    );
+
+    return rows[0];
+};
+
 module.exports = {
     getAllByUserId,
     findTargetById,
     createTarget,
     updateTarget,
     getCategoryById,
-    deleteTarget
+    deleteTarget,
+    findDailyByCategory
 };
