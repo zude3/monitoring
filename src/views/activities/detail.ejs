@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>activity details</title>
+</head>
+<body>
+    <h1>Activities</h1>
+
+<% if (date) { %>
+    <h2>
+        Activity Date:
+
+        <%= new Date(date).toLocaleDateString(
+            "id-ID",
+            {
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+            }
+        ) %>
+    </h2>
+
+<% } %>
+
+<% if (activities.length === 0) { %>
+
+    <p>
+        No Activities Today.
+    </p>
+
+<% } else { %>
+
+    <% activities.forEach(activity => { %>
+
+        <div class="activity-card">
+
+            <h3>
+                <%= activity.category_name %>
+            </h3>
+
+            <p>
+                <%= activity.activity_name %>
+            </p>
+
+            <p>
+                Duration:
+                <strong>
+                    <%= activity.duration %> minutes
+                </strong>
+            </p>
+
+        </div>
+
+    <% }) %>
+
+<% } %>
+
+<a href="/dashboard">back to dashboard</a>
+<a href="/activities">see all activities</a>
+</body>
+</html>

@@ -79,6 +79,73 @@ const remove = async (id, userId) => {
     }
 }
 
+const getActivitiesByDateAndCategory = async (
+    user_id,
+    date,
+    category_id
+) => {
+
+    const [rows] = await promisePool.query(
+        `SELECT
+            activities.*,
+            categories.name,
+            categories.icon
+
+        FROM activities
+
+        JOIN categories
+            ON categories.id = activities.category_id
+
+        WHERE activities.user_id = ?
+        AND activities.category_id = ?
+        AND activities.activity_date = ?
+
+        ORDER BY activities.created_at ASC`,
+        [
+            user_id,
+            category_id,
+            date
+        ]
+    );
+
+    return rows;
+};
+
+const getActivitiesByDate = async (
+    user_id,
+    activity_date
+) => {
+
+    const [rows] = await promisePool.query(
+        `SELECT
+            activities.id,
+            activities.activity_date,
+            activities.name,
+            activities.duration,
+            activities.notes,
+
+            categories.id AS category_id,
+            categories.name AS category_name,
+            categories.icon
+
+        FROM activities
+
+        JOIN categories
+            ON categories.id = activities.category_id
+
+        WHERE activities.user_id = ?
+        AND activities.activity_date = ?
+
+        ORDER BY activities.created_at ASC`,
+        [
+            user_id,
+            activity_date
+        ]
+    );
+
+    return rows;
+};
+
 module.exports = {
     getAllByUserId,
     findById,
@@ -86,5 +153,7 @@ module.exports = {
     update,
     getCategoriesByUserId,
     getTargetsByUserId,
-    remove
+    remove,
+    getActivitiesByDateAndCategory,
+    getActivitiesByDate
 }; 

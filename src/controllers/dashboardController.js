@@ -56,72 +56,83 @@ const buildCalendar = (
     year,
     month,
     activities,
-    targetValue
+    daily_categories
 ) => {
-    const activityMap = {};
+    const activity_map = {};
 
     activities.forEach(activity => {
         const date = formatLocalDate(
             new Date(activity.activity_date)
         );
 
-        activityMap[date] =
+        if (!activity_map[date]) {
+            activity_map[date] = {};
+        }
+
+        activity_map[date][activity.category_id] =
             Number(activity.actual_value);
     });
 
     const daysInMonth = new Date( year, month, 0).getDate();
 
-    const firstDay = new Date( year, month - 1, 1);
+    const first_day = new Date( year, month - 1, 1);
 
-    let startDay = firstDay.getDay();
+    let start_day = first_day.getDay();
 
-    startDay = startDay === 0
-        ? 6
-        : startDay - 1;
+    start_day = start_day === 0 ? 6 : start_day - 1;
 
-    const calendarDays = [];
+    const calendar_days = [];
 
-    for (let i = 0; i < startDay; i++) {
-        calendarDays.push(null);
+    for (let i = 0; i < start_day; i++) {
+        calendar_days.push(null);
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
         const date = new Date( year, month - 1, day );
 
-        const formattedDate =
-            formatLocalDate(date);
+        const formatted_date = formatLocalDate(date);
 
-        const actualValue =
-            activityMap[formattedDate] || 0;
+        const daily = daily_categories.map(
+            category => {
+                const actual_value = activity_map[formatted_date]?.[category.id] || 0;
+                const target_value = Number(category.target_value)                
+                let status;
 
-        let status;
+                if (actual_value === 0) {
+                    status = "gray";
 
-        if (actualValue === 0) {
-            status = "gray";
+                } else if (actual_value < target_value) {
+                    status = "yellow";
 
-        } else if (actualValue < targetValue) {
-            status = "yellow";
+                } else {
+                    status = "green";
+                }
 
-        } else {
-            status = "green";
-        }
+                const progress_percentage =
+                    target_value > 0
+                        ? (actual_value / target_value) * 100
+                        : 0;
+                
+                return {
+                    category_id : category.id,
+                    category_name : category.name,
+                    icon : category.icon,
+                    actual_value,
+                    target_value,
+                    status,
+                    progress_percentage
+                };
+            }
+        );
 
-        const progressPercentage =
-            targetValue > 0
-                ? (actualValue / targetValue) * 100
-                : 0;
-
-        calendarDays.push({
+        calendar_days.push({
             day,
-            date: formattedDate,
-            actualValue,
-            targetValue,
-            status,
-            progressPercentage
+            date: formatted_date,
+            daily
         });
     }
-
-    return calendarDays;
+    
+    return calendar_days;
 };
 
 const index = async (req, res) => {
@@ -157,43 +168,17 @@ const index = async (req, res) => {
             }
         }
 
-        let category_id = Number(req.query.category_id);
-
-        if (!category_id && dailyCategories.length > 0) {
-            category_id =
-                dailyCategories[0].id;
-        }
-
         let calendar = [];
-        let selectedCategory = null;
-
-        if (category_id) {
-
-            selectedCategory =
-                dailyCategories.find(
-                    category =>
-                        category.id === category_id
-                );
-
-            if (selectedCategory) {
-
-                const activities =
-                    await monitoringModel
-                        .getMonthlyDailyMonitoring(
-                            user_id,
-                            month,
-                            category_id,
-                            year
-                        );
-
-                calendar = buildCalendar(
-                    year,
-                    month,
-                    activities,
-                    selectedCategory.target_value
-                );
-            }
+        
+        if(dailyCategories.length > 0){
+            const category_ids = dailyCategories.map(category => category.id);
+            const activities = await monitoringModel.getMonthlyDailyMonitoring(
+                user_id, month, category_ids, year
+            );
+            calendar = buildCalendar(year, month, activities, dailyCategories);
         }
+
+
 
         const dailyRows = await monitoringModel.getDailyMonitoring(
             user_id,
@@ -278,7 +263,6 @@ const index = async (req, res) => {
             {
                 user: req.session.user,
                 dailyCategories,
-                selectedCategory,
                 calendar,
                 month,
                 year,
@@ -286,7 +270,7 @@ const index = async (req, res) => {
                 weeklyMonitoring,
                 startDate,
                 endDate,
-                currentTime
+                currentTime,
             }
         );
 
