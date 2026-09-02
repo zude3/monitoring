@@ -168,10 +168,10 @@ const index = async (req, res) => {
             calendar = buildCalendar(year, month, monitoring);
         }
 
-        console.log(user_id, today);
+        // console.log(user_id, today);
 
     const dailyMonitoring = await monitoringModel.getDailyMonitoring( user_id, today );
-    console.log("DAILY MONITORING:", dailyMonitoring);
+    // console.log("DAILY MONITORING:", dailyMonitoring);
         // //weekly    
         // const { startDate, endDate } = getWeekRange();
 

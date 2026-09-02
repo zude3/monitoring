@@ -16,19 +16,17 @@ const createDailyMonitoring = async (
     const categories =
         await categoryModel.getAllByUserId(
             user_id
-        );
-
-    console.log("CATEGORIES:", categories);    
+        ); 
 
     for (const category of categories) {
-        console.log("CATEGORY:", category);
+        // console.log("Category:", category);
         const target =
             await targetModel.findDailyByCategory(
                 user_id,
                 category.id
             );
         
-        console.log( "TARGET:", target);
+        // console.log( "TARGET:", target);
 
         if (!target) {
             console.log("TARGET TIDAK DITEMUKAN");

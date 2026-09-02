@@ -59,6 +59,10 @@ const update = async (id, userId, category_id, name, duration, activity_date, ac
             'UPDATE activities SET category_id = ?, name = ?, duration = ?, activity_date = ?, activity_time = ?, notes = ? WHERE id = ? AND user_id = ?',
             [category_id, name, duration, activity_date, activity_time, notes, id, userId]
         );
+
+        console.log("UPDATE RESULT:", result);
+
+
         return result;
     } catch (error) {
         console.error(error);
