@@ -2,41 +2,41 @@ const monitoringModel = require("../models/monitoringModel");
 const targetModel = require("../models/targetModel");
 const categoryModel = require("../models/categoryModel");
 
-const getWeekRange = () => {
-    const today = new Date();
+// const getWeekRange = () => {
+//     const today = new Date();
 
-    const day = today.getDay();
+//     const day = today.getDay();
 
-    const diffToMonday =
-        day === 0
-            ? -6
-            : 1 - day;
+//     const diffToMonday =
+//         day === 0
+//             ? -6
+//             : 1 - day;
 
-    const monday = new Date(today);
+//     const monday = new Date(today);
 
-    monday.setDate(
-        today.getDate() + diffToMonday
-    );
+//     monday.setDate(
+//         today.getDate() + diffToMonday
+//     );
 
-    monday.setHours(0, 0, 0, 0);
+//     monday.setHours(0, 0, 0, 0);
 
-    const sunday = new Date(monday);
+//     const sunday = new Date(monday);
 
-    sunday.setDate(
-        monday.getDate() + 6
-    );
+//     sunday.setDate(
+//         monday.getDate() + 6
+//     );
 
-    const formatDate = (date) => {
-        return date
-            .toISOString()
-            .split("T")[0];
-    };
+//     const formatDate = (date) => {
+//         return date
+//             .toISOString()
+//             .split("T")[0];
+//     };
 
-    return {
-        startDate: formatDate(monday),
-        endDate: formatDate(sunday)
-    };
-};
+//     return {
+//         startDate: formatDate(monday),
+//         endDate: formatDate(sunday)
+//     };
+// };
 
 const formatLocalDate = (date) => {
     const year = date.getFullYear();
@@ -58,10 +58,10 @@ const buildCalendar = (
     monitoring
 ) => {
 
-    console.log("=== BUILD CALENDAR ===");
-    console.log("YEAR:", year);
-    console.log("MONTH:", month);
-    console.log("MONITORING:", monitoring);
+    // console.log("=== BUILD CALENDAR ===");
+    // console.log("YEAR:", year);
+    // console.log("MONTH:", month);
+    // console.log("MONITORING:", monitoring);
 
     const monitoring_map = {};
 
@@ -109,12 +109,12 @@ const buildCalendar = (
 
         const daily = monitoring_map[formatted_date] || [];
 
-        console.log(
-    "DATE:",
-    formatted_date,
-    "DATA:",
-    monitoring_map[formatted_date]
-);
+    //     console.log(
+    // "DATE:",
+    // formatted_date,
+    // "DATA:",
+    // monitoring_map[formatted_date]
+// );
 
         calendar_days.push({
             day,
@@ -122,7 +122,7 @@ const buildCalendar = (
             daily
         });
     }
-    console.log("Calendar Days:", calendar_days);
+    // console.log("Calendar Days:", calendar_days);
     return calendar_days;
 };
 
@@ -168,54 +168,54 @@ const index = async (req, res) => {
             calendar = buildCalendar(year, month, monitoring);
         }
 
-
+        console.log(user_id, today);
 
     const dailyMonitoring = await monitoringModel.getDailyMonitoring( user_id, today );
+    console.log("DAILY MONITORING:", dailyMonitoring);
+        // //weekly    
+        // const { startDate, endDate } = getWeekRange();
 
-        //weekly    
-        const { startDate, endDate } = getWeekRange();
-
-        const weeklyRows =
-            await monitoringModel.getWeeklyMonitoring(
-                user_id,
-                startDate,
-                endDate
-            );
+        // const weeklyRows =
+        //     await monitoringModel.getWeeklyMonitoring(
+        //         user_id,
+        //         startDate,
+        //         endDate
+        //     );
         
-        const weeklyMonitoring =
-            weeklyRows.map(item => {
+        // const weeklyMonitoring =
+        //     weeklyRows.map(item => {
 
-                const actual_value =
-                    Number(item.actual_value);
+        //         const actual_value =
+        //             Number(item.actual_value);
 
-                const target_value =
-                    Number(item.target_value);
+        //         const target_value =
+        //             Number(item.target_value);
 
-                let status;
+        //         let status;
 
-                if (actual_value === 0) {
-                    status = "red";
+        //         if (actual_value === 0) {
+        //             status = "red";
 
-                } else if (
-                    actual_value < target_value
-                ) {
-                    status = "yellow";
+        //         } else if (
+        //             actual_value < target_value
+        //         ) {
+        //             status = "yellow";
 
-                } else {
-                    status = "green";
-                }
+        //         } else {
+        //             status = "green";
+        //         }
 
-                const progress_percentage =
-                    (actual_value / target_value) * 100;
+        //         const progress_percentage =
+        //             (actual_value / target_value) * 100;
 
-                return {
-                    ...item,
-                    actual_value,
-                    target_value,
-                    status,
-                    progress_percentage
-                };
-            });
+        //         return {
+        //             ...item,
+        //             actual_value,
+        //             target_value,
+        //             status,
+        //             progress_percentage
+        //         };
+        //     });
 
          res.render(
             "dashboard/index",
@@ -226,10 +226,10 @@ const index = async (req, res) => {
                 month,
                 year,
                 dailyMonitoring,
-                weeklyMonitoring,
-                startDate,
-                endDate,
-                currentTime,
+                // weeklyMonitoring,
+                // startDate,
+                // endDate,
+                // currentTime,
             }
         );
 

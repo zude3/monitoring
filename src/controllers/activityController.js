@@ -1,4 +1,5 @@
 const models = require("../models/activityModel");
+const monitoringService = require("../services/monitoringService");
 
 const getCategoriesByUserId = async (user_id) => {
     const categories = await models.getCategoriesByUserId(user_id);
@@ -66,6 +67,7 @@ const addActivity = async (req, res) => {
 
     try {
         await models.addActivity(user_id, category_id, name, duration, activity_date, activity_time, notes);
+        await monitoringService.updateDailyMonitoring(user_id,activity_date);
         res.redirect("/activities");
     } catch (error) {
         console.error("Error adding activity:", error);
@@ -102,6 +104,7 @@ const updateActivity = async (req, res) => {
         res.redirect("/activities");
     } catch (error) {
         console.error("Error updating activity:", error);
+        await monitoringService.updateDailyMonitoring( userId,activity_date);
         res.status(500).send("Internal Server Error");
     }
 };

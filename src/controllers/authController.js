@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const models = require("../models/userModel");
+const monitoringService = require("../services/monitoringService");
 
 const showRegister = (req, res) => {
     res.render("auth/register");
@@ -41,7 +42,24 @@ const login = async (req, res) => {
         }
 
         req.session.user = { id: user.id, name: user.username, email: user.email };
+        // ini bagian update monitoring harian untuk user yang login
+        req.session.isLogin = true;
+        // req.session.user = user;
 
+        const now = new Date();
+
+        const today =
+            `${now.getFullYear()}-${String(
+                now.getMonth() + 1
+            ).padStart(2, "0")}-${String(
+                now.getDate()
+            ).padStart(2, "0")}`;
+
+        await monitoringService.createDailyMonitoring(
+            user.id,
+            today
+        );
+        //batasnya ini
         req.session.save((err) => {
             if (err) {
                 console.error(err);

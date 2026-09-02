@@ -150,7 +150,7 @@ const getMonthlyMonitoring = async (
             month
         ]
     );
-    console.log("QUERY MONTHLY MONITORING:", rows);
+    // console.log("QUERY MONTHLY MONITORING:", rows);
     return rows;
 };
 
@@ -195,11 +195,43 @@ const create = async (
     return result;
 };
 
+const update = async (
+    user_id,
+    category_id,
+    monitoring_date,
+    actual_value,
+    target_value,
+    progress_percentage,
+    status
+) => {
+
+    await promisePool.query(
+        `UPDATE monitoring
+         SET
+            actual_value = ?,
+            target_value = ?,
+            progress_percentage = ?,
+            status = ?
+         WHERE user_id = ?
+         AND category_id = ?
+         AND monitoring_date = ?`,
+        [
+            actual_value,
+            target_value,
+            progress_percentage,
+            status,
+            user_id,
+            category_id,
+            monitoring_date
+        ]
+    );
+};
 
 module.exports = {
     getDailyMonitoring,
     getWeeklyMonitoring,
     getMonthlyDailyMonitoring,
     getMonthlyMonitoring,
-    create
+    create,
+    update
 };
