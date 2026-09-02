@@ -2,41 +2,41 @@ const monitoringModel = require("../models/monitoringModel");
 const targetModel = require("../models/targetModel");
 const categoryModel = require("../models/categoryModel");
 
-const getWeekRange = () => {
-    const today = new Date();
+// const getWeekRange = () => {
+//     const today = new Date();
 
-    const day = today.getDay();
+//     const day = today.getDay();
 
-    const diffToMonday =
-        day === 0
-            ? -6
-            : 1 - day;
+//     const diffToMonday =
+//         day === 0
+//             ? -6
+//             : 1 - day;
 
-    const monday = new Date(today);
+//     const monday = new Date(today);
 
-    monday.setDate(
-        today.getDate() + diffToMonday
-    );
+//     monday.setDate(
+//         today.getDate() + diffToMonday
+//     );
 
-    monday.setHours(0, 0, 0, 0);
+//     monday.setHours(0, 0, 0, 0);
 
-    const sunday = new Date(monday);
+//     const sunday = new Date(monday);
 
-    sunday.setDate(
-        monday.getDate() + 6
-    );
+//     sunday.setDate(
+//         monday.getDate() + 6
+//     );
 
-    const formatDate = (date) => {
-        return date
-            .toISOString()
-            .split("T")[0];
-    };
+//     const formatDate = (date) => {
+//         return date
+//             .toISOString()
+//             .split("T")[0];
+//     };
 
-    return {
-        startDate: formatDate(monday),
-        endDate: formatDate(sunday)
-    };
-};
+//     return {
+//         startDate: formatDate(monday),
+//         endDate: formatDate(sunday)
+//     };
+// };
 
 const formatLocalDate = (date) => {
     const year = date.getFullYear();
@@ -55,23 +55,38 @@ const formatLocalDate = (date) => {
 const buildCalendar = (
     year,
     month,
-    activities,
-    daily_categories
+    monitoring
 ) => {
-    const activity_map = {};
 
-    activities.forEach(activity => {
-        const date = formatLocalDate(
-            new Date(activity.activity_date)
-        );
+    // console.log("=== BUILD CALENDAR ===");
+    // console.log("YEAR:", year);
+    // console.log("MONTH:", month);
+    // console.log("MONITORING:", monitoring);
 
-        if (!activity_map[date]) {
-            activity_map[date] = {};
+    const monitoring_map = {};
+
+    monitoring.forEach(item => {
+        const date = item.monitoring_date;
+
+        if (!monitoring_map[date]) {
+            monitoring_map[date] = [];
         }
 
-        activity_map[date][activity.category_id] =
-            Number(activity.actual_value);
+        monitoring_map[date].push({
+            category_id: item.category_id,
+            category_name: item.category_name,
+            icon: item.icon,
+
+            actual_value: Number(item.actual_value),
+
+            target_value: Number(item.target_value),
+
+            progress_percentage: Number(item.progress_percentage),
+
+            status: item.status
+        });
     });
+
 
     const daysInMonth = new Date( year, month, 0).getDate();
 
@@ -92,38 +107,14 @@ const buildCalendar = (
 
         const formatted_date = formatLocalDate(date);
 
-        const daily = daily_categories.map(
-            category => {
-                const actual_value = activity_map[formatted_date]?.[category.id] || 0;
-                const target_value = Number(category.target_value)                
-                let status;
+        const daily = monitoring_map[formatted_date] || [];
 
-                if (actual_value === 0) {
-                    status = "gray";
-
-                } else if (actual_value < target_value) {
-                    status = "yellow";
-
-                } else {
-                    status = "green";
-                }
-
-                const progress_percentage =
-                    target_value > 0
-                        ? (actual_value / target_value) * 100
-                        : 0;
-                
-                return {
-                    category_id : category.id,
-                    category_name : category.name,
-                    icon : category.icon,
-                    actual_value,
-                    target_value,
-                    status,
-                    progress_percentage
-                };
-            }
-        );
+    //     console.log(
+    // "DATE:",
+    // formatted_date,
+    // "DATA:",
+    // monitoring_map[formatted_date]
+// );
 
         calendar_days.push({
             day,
@@ -131,7 +122,7 @@ const buildCalendar = (
             daily
         });
     }
-    
+    // console.log("Calendar Days:", calendar_days);
     return calendar_days;
 };
 
@@ -171,92 +162,60 @@ const index = async (req, res) => {
         let calendar = [];
         
         if(dailyCategories.length > 0){
-            const category_ids = dailyCategories.map(category => category.id);
-            const activities = await monitoringModel.getMonthlyDailyMonitoring(
-                user_id, month, category_ids, year
-            );
-            calendar = buildCalendar(year, month, activities, dailyCategories);
+            const monitoring  = await monitoringModel.getMonthlyMonitoring(
+                user_id, month, year
+            )
+            calendar = buildCalendar(year, month, monitoring);
         }
 
+        // console.log(user_id, today);
 
+    const dailyMonitoring = await monitoringModel.getDailyMonitoring( user_id, today );
+    // console.log("DAILY MONITORING:", dailyMonitoring);
+        // //weekly    
+        // const { startDate, endDate } = getWeekRange();
 
-        const dailyRows = await monitoringModel.getDailyMonitoring(
-            user_id,
-            today
-        );
-
-        const dailyMonitoring = dailyRows.map(item => {
-
-            const actualValue = Number(item.actual_value);
-            const targetValue = Number(item.target_value);
-
-            let status;
-
-            if (actualValue === 0) {
-                status = "red";
-            } else if (actualValue < targetValue) {
-                status = "yellow";
-            } else {
-                status = "green";
-            }
-
-            const progressPercentage = targetValue > 0 ? (actualValue / targetValue) * 100 : 0;
-
-            return {
-                ...item,
-                actualValue,
-                targetValue,
-                status,
-                progressPercentage
-            };
-        });
-
-        //weekly    
-        const { startDate, endDate } = getWeekRange();
-
-        const weeklyRows =
-            await monitoringModel.getWeeklyMonitoring(
-                user_id,
-                startDate,
-                endDate
-            );
+        // const weeklyRows =
+        //     await monitoringModel.getWeeklyMonitoring(
+        //         user_id,
+        //         startDate,
+        //         endDate
+        //     );
         
-        const weeklyMonitoring =
-            weeklyRows.map(item => {
+        // const weeklyMonitoring =
+        //     weeklyRows.map(item => {
 
-                const actualValue =
-                    Number(item.actual_value);
+        //         const actual_value =
+        //             Number(item.actual_value);
 
-                const targetValue =
-                    Number(item.target_value);
+        //         const target_value =
+        //             Number(item.target_value);
 
-                let status;
+        //         let status;
 
-                if (actualValue === 0) {
-                    status = "red";
+        //         if (actual_value === 0) {
+        //             status = "red";
 
-                } else if (
-                    actualValue < targetValue
-                ) {
-                    status = "yellow";
+        //         } else if (
+        //             actual_value < target_value
+        //         ) {
+        //             status = "yellow";
 
-                } else {
-                    status = "green";
-                }
+        //         } else {
+        //             status = "green";
+        //         }
 
-                const progressPercentage =
-                    (actualValue / targetValue) * 100;
+        //         const progress_percentage =
+        //             (actual_value / target_value) * 100;
 
-                return {
-                    ...item,
-                    actualValue,
-                    targetValue,
-                    status,
-                    progressPercentage
-                };
-            });
-
-            console.log("Weekly Monitoring:", weeklyMonitoring);
+        //         return {
+        //             ...item,
+        //             actual_value,
+        //             target_value,
+        //             status,
+        //             progress_percentage
+        //         };
+        //     });
 
          res.render(
             "dashboard/index",
@@ -267,10 +226,10 @@ const index = async (req, res) => {
                 month,
                 year,
                 dailyMonitoring,
-                weeklyMonitoring,
-                startDate,
-                endDate,
-                currentTime,
+                // weeklyMonitoring,
+                // startDate,
+                // endDate,
+                // currentTime,
             }
         );
 

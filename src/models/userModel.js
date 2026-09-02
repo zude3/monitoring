@@ -10,4 +10,14 @@ const createUser = async (username, email, password) => {
     return result;
 }
 
-module.exports = { findByEmail, createUser };
+const getAll = async () => {
+
+    const [rows] =
+        await promisePool.query(
+            `SELECT id FROM users`
+        );
+
+    return rows;
+};
+
+module.exports = { findByEmail, createUser, getAll};
