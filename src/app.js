@@ -8,7 +8,9 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const activityRoutes = require("./routes/activityRoutes");
 const targetRoutes = require("./routes/targetRoutes");
-const testRoutes = require("./routes/testRoutes")
+const testRoutes = require("./routes/testRoutes");
+const activityWatchRouter = require("./routes/activityWatchRoutes");
+const activitySessionRouter = require("./routes/activitySessionRoutes");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -30,7 +32,9 @@ app.use("/dashboard", dashboardRoutes);
 app.use("/categories", categoryRoutes);
 app.use("/activities", activityRoutes);
 app.use("/targets", targetRoutes);
-app.use("/test", testRoutes)
+app.use("/test", testRoutes);
+app.use("/api/activity-watch", activityWatchRouter);
+app.use("/api/activity-session", activitySessionRouter);
 
 app.get("/", (req, res) => {
     res.redirect("/auth/login");
